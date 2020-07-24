@@ -1,67 +1,46 @@
 import React from "react";
-import propTypes from "prop-types";
+import axios from "axios";
+import Movie from "./Movie";
 
-const foodArray = [
-  {
-    id: 1,
-    name: "kimchi",
-    image:
-      "https://c.ndtvimg.com/2020-01/e4l8n4e8_kimchi_625x300_28_January_20.jpg",
-    rating: 5,
-  },
-  {
-    id: 2,
-    name: "gimbap",
-    image:
-      "https://mykoreankitchen.com/wp-content/uploads/2006/10/1.-Easy-Kimbap.jpg",
-    rating: 4,
-  },
-  {
-    id: 3,
-    name: "jajangmyeon",
-    image:
-      "https://previews.123rf.com/images/nontoxicguy/nontoxicguy1611/nontoxicguy161100429/66442156-jajangmyeon-black-bean-sauce-noodles.jpg",
-    rating: 4,
-  },
-  {
-    id: 4,
-    name: "japchae",
-    image:
-      "https://okonomikitchen.com/wp-content/uploads/2019/07/vegan-japchae-recipe-1-of-1.jpg",
-    rating: 4,
-  },
-];
-// API를 통해서 얻은 data라고 가정
+class App extends React.Component {
+  state = {
+    isLoading: true,
+    movies: [],
+  };
 
-function Food({ name, picture, rating }) {
-  return (
-    <div>
-      <h2>I like {name}</h2>
-      <h4>{rating}/5</h4>
-      <img src={picture} alt={name}></img>
-    </div>
-  );
-}
+  getMovies = async () => {
+    const {
+      data: {
+        data: { movies },
+      },
+    } = await axios.get(
+      "https://yts.mx/api/v2/list_movies.json?sort_by=rating"
+    );
+    this.setState({ movies, isLoading: false });
+  };
 
-Food.propTypes = {
-  name: propTypes.string.isRequired,
-  picture: propTypes.string.isRequired,
-  rating: propTypes.number.isRequired,
-};
-
-function App() {
-  return (
-    <div>
-      {foodArray.map((dish) => (
-        <Food
-          name={dish.name}
-          picture={dish.image}
-          key={dish.id}
-          rating={dish.rating}
-        />
-      ))}
-    </div>
-  );
+  componentDidMount() {
+    this.getMovies();
+  }
+  render() {
+    const { isLoading, movies } = this.state;
+    return (
+      <div>
+        {isLoading
+          ? "Loading"
+          : movies.map((movie) => (
+              <Movie
+                key={movie.id} //list에 있는 각 child는 key를 가져야한다.
+                id={movie.id}
+                year={movie.year}
+                title={movie.title}
+                summary={movie.summary}
+                poster={movie.medium_cover_image}
+              />
+            ))}
+      </div>
+    );
+  }
 }
 
 export default App;
