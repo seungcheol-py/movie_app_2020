@@ -1,22 +1,33 @@
 import React from "react";
 import propTypes from "prop-types";
 
-function Movie({ key, id, year, title, summary, poster }) {
+function Movie({ year, title, summary, poster, genres }) {
   return (
-    <div>
-      <h4>{title}</h4>
-      <h2>{year}</h2>
-      <img src={poster} alt={id}></img>
-      <h2>{summary}</h2>
+    <div className="movie">
+      <img src={poster} alt={title} title={title}></img>
+      <div className="movie__data">
+        <h3 className="movie__title">{title}</h3>
+        <h4 className="movie__year">{year}</h4>
+        <ul className="movie__genres">
+          {genres.map((genre, index) => (
+            <li className="movie__genres__genre" key={index}>
+              {genre}
+            </li>
+          ))}
+        </ul>
+        <p className="movie__summary">{summary.slice(0, 180)}...</p>
+      </div>
     </div>
   );
 }
 
 Movie.prototype = {
-  id: propTypes.number.isRequired,
+  key: propTypes.number.isRequired,
   year: propTypes.number.isRequired,
   title: propTypes.string.isRequired,
   summary: propTypes.string.isRequired,
   poster: propTypes.string.isRequired,
+  genres: propTypes.arrayOf(propTypes.string),
 };
+// some movies don't have genres. (isRequired)X
 export default Movie;
